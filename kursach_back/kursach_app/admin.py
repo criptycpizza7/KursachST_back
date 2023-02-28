@@ -1,3 +1,16 @@
 from django.contrib import admin
+from .models import Company, Portfolio, User
 
-# Register your models here.
+
+@admin.register(User)
+class UserAdmin(admin.ModelAdmin):
+    fields = ("first_name", "last_name", "username")
+
+
+@admin.register(Company)
+class CompanyAdmin(admin.ModelAdmin):
+    fields = ('Name', 'Ticker', 'Picture', 'Number_of_shares', 'Country', 'Currency')
+
+@admin.register(Portfolio)
+class PortfolioAdmin(admin.ModelAdmin):
+    fields = ('User_id', 'Company_id', 'Number_of_shares')

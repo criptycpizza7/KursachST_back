@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
 
 # Create your models here.
 
@@ -10,22 +11,26 @@ class Company(models.Model):
     Country = models.CharField(max_length=30)
     Currency = models.CharField(max_length=30, default='dollar')
 
+    class Meta:
+        verbose_name_plural = 'Companies'
+
+    def __str__(self):
+        return f"{self.Name} - {self.Ticker}"
+
 class Stocks(models.Model):
     Time = models.DateTimeField(primary_key=True, auto_now_add=True)
     Price = models.FloatField()
     Company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
     Change_percent = models.FloatField()
 
-class User(models.Model):
-    Login = models.CharField(max_length=50)
-    Password = models.CharField(max_length=50)
-    Last_name = models.CharField(max_length=50)
-    First_name = models.CharField(max_length=50)
-    Email = models.EmailField()
-    Administrator = models.BooleanField(default=False)
-    Manager = models.BooleanField(default=False) 
+class User(AbstractUser):
+    Status = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.username}"
 
 class Portfolio(models.Model):
     User_id = models.ForeignKey('User', on_delete=models.CASCADE)
     Company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
     Number_of_shares = models.IntegerField()
+    
