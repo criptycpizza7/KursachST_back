@@ -33,4 +33,17 @@ class Portfolio(models.Model):
     User_id = models.ForeignKey('User', on_delete=models.CASCADE)
     Company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
     Number_of_shares = models.IntegerField()
+
+    class Meta:
+        verbose_name_plural = 'Portfolio'
+
     
+class Operations(models.Model):
+    User_id = models.ForeignKey('User', on_delete=models.CASCADE)
+    Company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    Date_time = models.DateTimeField(auto_now_add=True)
+    Number_of_shares = models.IntegerField(default=0)
+    Price = models.FloatField()
+
+    class Meta:
+        verbose_name_plural = 'Operations'
