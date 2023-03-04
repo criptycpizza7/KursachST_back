@@ -18,12 +18,9 @@ from django.urls import include, path
 from kursach_app import views
 from rest_framework import routers
 
-router = routers.DefaultRouter()
-# router.register(r'user', views.UserAPIview)
-# router.register(r'company', views.CompanyViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include(router.urls)),
-    path('users/', views.UserAPIview.as_view())
+    path('users/', views.UserAPIview.as_view()),
+    path('company/', views.CompanyAPIview.as_view()),
 ]

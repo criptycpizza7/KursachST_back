@@ -4,11 +4,11 @@ from django.contrib.auth.models import AbstractUser
 # Create your models here.
 
 class Company(models.Model):
-    Name = models.CharField(max_length=30)
-    Ticker = models.CharField(max_length=5)
+    Name = models.CharField(max_length=30, unique=True)
+    Ticker = models.CharField(max_length=5, unique=True)
     Picture = models.CharField(max_length=100, null=True)
     Number_of_shares = models.IntegerField()
-    Country = models.CharField(max_length=30)
+    Country = models.CharField(max_length=50)
     Currency = models.CharField(max_length=30, default='dollar')
 
     class Meta:
@@ -25,6 +25,8 @@ class Stocks(models.Model):
 
 class User(AbstractUser):
     Status = models.BooleanField(default=False)
+    date_joined = models.DateField(auto_now_add=True)
+    is_active = models.BooleanField(null=True)
 
     def __str__(self):
         return f"{self.username}"
