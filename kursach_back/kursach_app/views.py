@@ -1,6 +1,6 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
-from .models import Company, User
+from .models import Company, User, Stocks
 from .serializers import CompanySerializer, UserSerializer
 from rest_framework import views
 from rest_framework.response import Response
@@ -11,17 +11,17 @@ class UserAPIview(views.APIView):
         data = User.objects.all().values()
         return Response(list(data))
 
-    def post(self, request):
-        new_obj = User.objects.create(
-            username = request.data['username'],
-            password = request.data['password'],
-            first_name = request.data['first_name'],
-            last_name = request.data['last_name'],
-            email = request.data['email'],
-            is_superuser = False,
-            is_staff = request.data['is_staff'],
-            date_joined = date.today(),
-        )
+    # def post(self, request):
+    #     new_obj = User.objects.create(
+    #         username = request.data['username'],
+    #         password = request.data['password'],
+    #         first_name = request.data['first_name'],
+    #         last_name = request.data['last_name'],
+    #         email = request.data['email'],
+    #         is_superuser = False,
+    #         is_staff = request.data['is_staff'],
+    #         date_joined = date.today(),
+    #     )
     
 
 
@@ -41,3 +41,14 @@ class CompanyAPIview(views.APIView):
         )
         
         return Response({'response': model_to_dict(new_obj)})
+    
+
+class GetStocksByCompany(views.APIView):
+    def get(self, request):
+        company = Company.objects.filter(Name=request.data['name'])
+        if company.exists():
+            company_id = company.values()[0]['id']
+            stocks = Stocks.objects.filter(Company_id=company_id)
+            return Response({'name': company.values()[0]['Name'], 'stocks': stocks.values()})
+        else:
+            return Response('Неверно указано название компании')
