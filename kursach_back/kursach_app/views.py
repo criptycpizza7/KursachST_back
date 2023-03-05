@@ -33,16 +33,9 @@ class CompanyAPIview(views.APIView):
     def post(self, request):
         serializer = CompanySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        new_obj = Company.objects.create(
-            Name = request.data['name'],
-            Ticker = request.data['ticker'],
-            Picture = request.data['picture'],
-            Number_of_shares = request.data['number_of_shares'],
-            Country = request.data['country'],
-            Currency = request.data['currency'],
-        )
+        serializer.save()
         
-        return Response({'response': CompanySerializer(new_obj).data})
+        return Response({'response': serializer.data})
     
 
 class GetStocksByCompany(views.APIView):
