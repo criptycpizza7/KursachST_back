@@ -27,10 +27,12 @@ class UserAPIview(views.APIView):
 
 class CompanyAPIview(views.APIView):
     def get(self, request):
-        data = Company.objects.all().values()
-        return Response(list(data))
+        data = Company.objects.all()
+        return Response({'response': CompanySerializer(data, many=True).data})
 
     def post(self, request):
+        serializer = CompanySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
         new_obj = Company.objects.create(
             Name = request.data['name'],
             Ticker = request.data['ticker'],
@@ -40,7 +42,7 @@ class CompanyAPIview(views.APIView):
             Currency = request.data['currency'],
         )
         
-        return Response({'response': model_to_dict(new_obj)})
+        return Response({'response': CompanySerializer(new_obj).data})
     
 
 class GetStocksByCompany(views.APIView):
