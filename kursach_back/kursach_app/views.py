@@ -37,6 +37,21 @@ class CompanyAPIview(views.APIView):
         
         return Response({'response': serializer.data})
     
+    def put(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        if not pk:
+            return Response({'error': 'Неверный объект'})
+
+        try: 
+            instance = Company.objects.get(pk=pk)
+        except:
+            return Response({'error': 'Неверный объект'})
+
+        serializer = CompanySerializer(data=request.data, instance=instance)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response({'response': serializer.data})
+    
 
 class GetStocksByCompany(views.APIView):
     def get(self, request):

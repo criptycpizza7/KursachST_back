@@ -23,6 +23,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', views.UserAPIview.as_view()),
     path('company/', views.CompanyAPIview.as_view()),
+    path('company/<int:pk>/', views.CompanyAPIview.as_view()),
+
     path('stocks/', views.GetStocksByCompany.as_view()),
 
 ]
