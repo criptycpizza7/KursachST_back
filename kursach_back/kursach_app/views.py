@@ -51,6 +51,19 @@ class CompanyAPIview(views.APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'response': serializer.data})
+
+    def delete(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        if not pk:
+            return Response({'error': 'Неверный объект'})
+        
+        try:
+            instance = Company.objects.get(pk=pk)
+        except:
+            return Response({'error': 'Неверный объект'})
+        
+        instance.delete()
+        return Response({'response': ['deleted',]})
     
 
 class GetStocksByCompany(views.APIView):
