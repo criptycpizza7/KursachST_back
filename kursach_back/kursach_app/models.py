@@ -20,7 +20,7 @@ class Company(models.Model):
 class Stocks(models.Model):
     time = models.DateTimeField(primary_key=True, auto_now_add=True)
     price = models.FloatField()
-    company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE)
     change_percent = models.FloatField()
 
 class User(AbstractUser):
@@ -32,8 +32,8 @@ class User(AbstractUser):
         return f"{self.username}"
 
 class Portfolio(models.Model):
-    user_id = models.ForeignKey('User', on_delete=models.CASCADE)
-    company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE)
     number_of_shares = models.IntegerField()
 
     class Meta:
@@ -41,11 +41,12 @@ class Portfolio(models.Model):
 
     
 class Operations(models.Model):
-    user_id = models.ForeignKey('User', on_delete=models.CASCADE)
-    company_id = models.ForeignKey('Company', on_delete=models.CASCADE)
+    user = models.ForeignKey('User', on_delete=models.CASCADE)
+    company = models.ForeignKey('Company', on_delete=models.CASCADE)
     date_time = models.DateTimeField(auto_now_add=True)
     number_of_shares = models.IntegerField(default=0)
     price = models.FloatField()
+    status = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = 'Operations'
