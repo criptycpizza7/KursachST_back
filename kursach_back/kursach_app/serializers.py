@@ -13,6 +13,12 @@ class CompanySerializer(serializers.ModelSerializer):
         model = Company
         fields = '__all__'
 
+
+class PortfolioSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Portfolio
+        fields = '__all__'
+
     # def create(self, validated_data):
     #     return Company.objects.create(**validated_data)
     

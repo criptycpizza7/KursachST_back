@@ -1,6 +1,6 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
-from .models import Company, User, Stocks
+from .models import Company, Portfolio, User, Stocks
 from .serializers import CompanySerializer, UserSerializer
 from rest_framework import views
 from rest_framework.response import Response
@@ -10,19 +10,6 @@ class UserAPIview(views.APIView):
     def get(self, request):
         data = User.objects.all().values()
         return Response(list(data))
-
-    # def post(self, request):
-    #     new_obj = User.objects.create(
-    #         username = request.data['username'],
-    #         password = request.data['password'],
-    #         first_name = request.data['first_name'],
-    #         last_name = request.data['last_name'],
-    #         email = request.data['email'],
-    #         is_superuser = False,
-    #         is_staff = request.data['is_staff'],
-    #         date_joined = date.today(),
-    #     )
-    
 
 
 class CompanyAPIview(views.APIView):
@@ -72,6 +59,16 @@ class GetStocksByCompany(views.APIView):
         if company.exists():
             company_id = company.values()[0]['id']
             stocks = Stocks.objects.filter(Company_id=company_id)
-            return Response({'name': company.values()[0]['Name'], 'stocks': stocks.values()})
+            return Response({'response': {'name': company.values()[0]['Name'], 'stocks': stocks.values()}})
         else:
-            return Response('Неверно указано название компании')
+            return Response({'error': 'Неверно указано название компании'})
+        
+
+class GetPortfolioOfUser(views.APIView):
+    def get(self, request):
+        portfolio = Portfolio.objects.filter(user_id=request.data['user_id'])
+        if portfolio.exists():
+            return Response({'response': portfolio.values()})
+        else:
+            return Response({'error': 'Неверно указан id'})
+        
