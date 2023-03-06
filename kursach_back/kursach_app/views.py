@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .models import Company, Portfolio, User, Stocks
-from .serializers import CompanySerializer, UserSerializer
+from .serializers import CompanySerializer, PortfolioSerializer, UserSerializer
 from rest_framework import views
 from rest_framework.response import Response
 from datetime import date
@@ -71,4 +71,42 @@ class GetPortfolioOfUser(views.APIView):
             return Response({'response': portfolio.values()})
         else:
             return Response({'error': 'Неверно указан id'})
+        
+    def post(self, request):
+
+        user_portfolio = 0
+
+        try:
+            user_portfolio = Portfolio.objects.get(user_id = request.data['user'], company_id = request.data['company'])
+
+            serializer = PortfolioSerializer(data=model_to_dict(user_portfolio))
+            serializer.is_valid(raise_exception=True)
+
+            valid_user_portfolio = {}
+            valid_user_portfolio['id'] = user_portfolio.pk
+            valid_user_portfolio['user'] = user_portfolio.user_id
+            valid_user_portfolio['company'] = user_portfolio.company_id
+            valid_user_portfolio['number_of_shares'] = user_portfolio.number_of_shares
+
+            valid_user_portfolio['number_of_shares'] += request.data['number_of_shares']
+
+            valid_user_portfolio['user'] = user_portfolio.user
+            valid_user_portfolio['company'] = user_portfolio.company
+
+            serializer.update(instance=user_portfolio, validated_data=valid_user_portfolio)
+
+        except:
+            user = User.objects.filter(pk = request.data['user'])
+            company = Company.objects.filter(pk = request.data['company'])
+
+            if not user.exists():
+                return Response({'error': 'Неверный id пользователя'})
+            if not company.exists():
+                return Response({'error': 'Неверный id компании'})
+
+            serializer = PortfolioSerializer(data=request.data)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+
+        return Response({'response': serializer.data})
         
