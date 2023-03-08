@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
-from .models import Company, Portfolio, User, Stocks
-from .serializers import CompanySerializer, PortfolioSerializer, UserSerializer
+from .models import Company, Operations, Portfolio, User, Stocks
+from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, UserSerializer
 from rest_framework import views
 from rest_framework.response import Response
 from datetime import date
@@ -78,7 +78,7 @@ class GetPortfolioOfUser(views.APIView):
 
         try:
             user_portfolio = Portfolio.objects.get(user_id = request.data['user'], company_id = request.data['company'])
-
+            
             serializer = PortfolioSerializer(data=model_to_dict(user_portfolio))
             serializer.is_valid(raise_exception=True)
 
@@ -108,5 +108,26 @@ class GetPortfolioOfUser(views.APIView):
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
-        return Response({'response': serializer.data})
+        current_price = Stocks.objects.filter(company = request.data['company']).latest().price
+            
+        operation_obj = {'user': request.data['user'], 'company': request.data['company'],
+                            'number_of_shares': request.data['number_of_shares'], 'price': current_price,
+                            'status': request.data['number_of_shares'] > 0}
         
+        operation_serializer = OperationsSerializer(data=operation_obj)
+        operation_serializer.is_valid(raise_exception=True)
+        operation_serializer.save()
+
+        return Response({'response': serializer.data})
+    
+class GetOperations(views.APIView):
+    def get(self, request):
+        operations = Operations.objects.filter(user_id = request.data['user'])
+        if operations.exists():
+            return Response({'response': operations.values()})
+        else:
+            try: 
+                user = User.objects.get(pk = request.data['user'])
+                return Response({'error': 'У пользователя нет операций'})
+            except:
+                return Response({'error': 'Неверный id пользователя'})

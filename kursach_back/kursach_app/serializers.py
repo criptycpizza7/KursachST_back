@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Company, Stocks, Portfolio
+from .models import Operations, User, Company, Stocks, Portfolio
 
 
 class UserSerializer(serializers.Serializer):
@@ -17,6 +17,12 @@ class CompanySerializer(serializers.ModelSerializer):
 class PortfolioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Portfolio
+        fields = '__all__'
+
+
+class OperationsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Operations
         fields = '__all__'
 
     # def create(self, validated_data):

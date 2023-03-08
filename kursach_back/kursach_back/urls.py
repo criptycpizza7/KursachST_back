@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from kursach_app import views
-from rest_framework import routers
 
 
 urlpatterns = [
@@ -26,5 +25,6 @@ urlpatterns = [
     path('company/<int:pk>/', views.CompanyAPIview.as_view()),
     path("portfolio/", views.GetPortfolioOfUser.as_view()),
     path('stocks/', views.GetStocksByCompany.as_view()),
+    path('operations/', views.GetOperations.as_view()),
 
 ]

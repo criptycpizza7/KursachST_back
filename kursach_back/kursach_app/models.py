@@ -23,6 +23,10 @@ class Stocks(models.Model):
     company = models.ForeignKey('Company', on_delete=models.CASCADE)
     change_percent = models.FloatField()
 
+    class Meta:
+        get_latest_by = ['time']
+
+
 class User(AbstractUser):
     status = models.BooleanField(default=False)
     date_joined = models.DateField(auto_now_add=True)
