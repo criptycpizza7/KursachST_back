@@ -1,8 +1,8 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .models import Company, Operations, Portfolio, User, Stocks
-from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, UserSerializer
-from rest_framework import views
+from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, UserSerializer, UserSerializerProd
+from rest_framework import views, viewsets
 from rest_framework.response import Response
 from datetime import date
 
@@ -10,6 +10,11 @@ class UserAPIview(views.APIView):
     def get(self, request):
         data = User.objects.all().values()
         return Response(list(data))
+    
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializerProd
 
 
 class CompanyAPIview(views.APIView):
