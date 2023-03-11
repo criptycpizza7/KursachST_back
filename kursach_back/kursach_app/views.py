@@ -75,7 +75,7 @@ class GetPortfolioOfUser(views.APIView):
         if portfolio.exists():
             return Response({'response': portfolio.values()})
         else:
-            return Response({'error': 'Неверно указан id'})
+            return Response({'error': 'Неверно указан id пользователя'})
         
     def post(self, request):
 
@@ -93,7 +93,14 @@ class GetPortfolioOfUser(views.APIView):
             valid_user_portfolio['company'] = user_portfolio.company_id
             valid_user_portfolio['number_of_shares'] = user_portfolio.number_of_shares
 
+            if valid_user_portfolio['number_of_shares'] + request.data['number_of_shares'] < 0:
+                return Response({'error': 'недостаточно акиций для совершения операции'})
+
             valid_user_portfolio['number_of_shares'] += request.data['number_of_shares']
+
+            if valid_user_portfolio['number_of_shares'] == 0:
+                user_portfolio.delete()
+                return Response({'response': 'Запись удалена'})
 
             valid_user_portfolio['user'] = user_portfolio.user
             valid_user_portfolio['company'] = user_portfolio.company
@@ -108,6 +115,9 @@ class GetPortfolioOfUser(views.APIView):
                 return Response({'error': 'Неверный id пользователя'})
             if not company.exists():
                 return Response({'error': 'Неверный id компании'})
+            
+            if request.data['number_of_shares'] < 0:
+                return Response({'error': 'У пользователя нет данных акций'})
 
             serializer = PortfolioSerializer(data=request.data)
             serializer.is_valid(raise_exception=True)
