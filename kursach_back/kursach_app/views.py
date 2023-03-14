@@ -5,19 +5,20 @@ from .serializers import CompanySerializer, OperationsSerializer, PortfolioSeria
 from rest_framework import views, viewsets
 from rest_framework.response import Response
 from datetime import date
-
-class UserAPIview(views.APIView):
-    def get(self, request):
-        data = User.objects.all().values()
-        return Response(list(data))
-    
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 class UserViewSet(viewsets.ModelViewSet):
+
+    permission_classes = (IsAuthenticated,)
+
     queryset = User.objects.all()
     serializer_class = UserSerializerProd
 
 
 class CompanyAPIview(views.APIView):
+
+    permission_classes = (IsAuthenticatedOrReadOnly, )
+
     def get(self, request):
         data = Company.objects.all()
         return Response({'response': CompanySerializer(data, many=True).data})
@@ -70,6 +71,9 @@ class GetStocksByCompany(views.APIView):
         
 
 class GetPortfolioOfUser(views.APIView):
+
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         portfolio = Portfolio.objects.filter(user_id=request.data['user_id'])
         if portfolio.exists():
@@ -136,6 +140,9 @@ class GetPortfolioOfUser(views.APIView):
         return Response({'response': serializer.data})
     
 class GetOperations(views.APIView):
+
+    permission_classes = (IsAuthenticated,)
+
     def get(self, request):
         operations = Operations.objects.filter(user_id = request.data['user'])
         if operations.exists():

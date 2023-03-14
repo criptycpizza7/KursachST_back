@@ -29,7 +29,6 @@ router.register(r'users', views.UserViewSet, basename='users')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    # path('users/', views.UserViewSet.as_view()),
     path('company/', views.CompanyAPIview.as_view()),
     path('company/<int:pk>/', views.CompanyAPIview.as_view()),
     path("portfolio/", views.GetPortfolioOfUser.as_view()),
@@ -37,6 +36,6 @@ urlpatterns = [
     path('operations/', views.GetOperations.as_view()),
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    path('token/verify/', TokenVerifyView.as_view(), name='token_verify'),
     path('', include(router.urls)),
 ]
