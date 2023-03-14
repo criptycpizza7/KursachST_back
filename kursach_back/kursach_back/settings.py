@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'kursach_app.apps.KursachAppConfig',
     'django_filters',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
