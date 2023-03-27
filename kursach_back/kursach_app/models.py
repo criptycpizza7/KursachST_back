@@ -28,9 +28,14 @@ class Stocks(models.Model):
 
 
 class User(AbstractUser):
+    is_superuser = models.BooleanField(default=False)
     status = models.BooleanField(default=False)
     date_joined = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
+    middle_name = models.CharField(null=True, max_length=30)
+    passport = models.CharField(null=False, unique=True, max_length=15)
+    INN = models.CharField(null=False, unique=True, max_length=20)
+    phone_number = models.CharField(null=False, unique=True, max_length=12)
 
     def __str__(self):
         return f"{self.username}"

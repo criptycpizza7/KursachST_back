@@ -15,6 +15,64 @@ class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializerProd
 
 
+class RegisterView(views.APIView):
+
+    def post(self, request):
+
+        obj = False
+        
+        try:
+            obj = User.objects.get(username=request.data['username'])
+        except:
+            pass
+        if bool(obj):
+            return Response({'error': 'Пользователь с таким логином уже существует'})
+        
+        try:
+            obj = User.objects.get(email=request.data['email'])
+        except:
+            pass
+        if bool(obj):
+            return Response({'error': 'Пользователь с такой почтой уже существует'})
+        
+        try:
+            obj = User.objects.get(passport=request.data['passport'])
+        except:
+            pass
+        if bool(obj):
+            return Response({'error': 'Пользователь с таким номером паспорта уже существует'})
+        
+        try:
+            obj = User.objects.get(INN=request.data['INN'])
+        except:
+            pass
+        if bool(obj):
+            return Response({'error': 'Пользователь с таким ИНН уже существует'})
+        
+        try:
+            obj = User.objects.get(phone_number=request.data['phone_number'])
+        except:
+            pass
+        if bool(obj):
+            return Response({'error': 'Пользователь с таким номером телефона уже существует'})
+        
+        serializer = UserSerializerProd(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = User.objects.create_user(username=request.data['username'],
+                                        password=request.data['password'],
+
+                                        first_name=request.data['first_name'],
+                                        last_name=request.data['last_name'],
+                                        middle_name=request.data['middle_name'],
+
+                                        email=request.data['email'],
+                                        INN=request.data['INN'],
+                                        passport=request.data['passport'],
+                                        phone_number=request.data['phone_number'])
+
+        return Response({'response': serializer.data})
+
+
 class CompanyAPIview(views.APIView):
 
     permission_classes = (IsAuthenticatedOrReadOnly, )
