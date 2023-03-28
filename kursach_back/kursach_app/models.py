@@ -10,6 +10,7 @@ class Company(models.Model):
     number_of_shares = models.IntegerField()
     country = models.CharField(max_length=50)
     currency = models.CharField(max_length=30, default='dollar')
+    description = models.CharField(max_length=500, null=True) 
 
     class Meta:
         verbose_name_plural = 'Companies'
