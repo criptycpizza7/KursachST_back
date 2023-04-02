@@ -89,6 +89,22 @@ class CompanyAPIview(views.APIView):
         
         return Response({'response': serializer.data})
     
+    
+    
+
+class SingleCompanyApiView(views.APIView):
+    
+    def get(self, request, *args, **kwargs):
+        pk = kwargs.get('pk', None)
+        if not pk:
+            return Response({'error': 'Неверный объект'})
+        
+        try: 
+            instance = Company.objects.get(pk=pk)
+            return Response({'response': model_to_dict(instance)})
+        except:
+            return Response({'error': 'Неверный объект'})
+
     def put(self, request, *args, **kwargs):
         pk = kwargs.get('pk', None)
         if not pk:
@@ -116,7 +132,6 @@ class CompanyAPIview(views.APIView):
         
         instance.delete()
         return Response({'response': ['deleted',]})
-    
 
 class GetStocksByCompany(views.APIView):
     def get(self, request):

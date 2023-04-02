@@ -44,7 +44,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
 
     path('company/', views.CompanyAPIview.as_view()),
-    path('company/<int:pk>/', views.CompanyAPIview.as_view()),
+    path('company/<int:pk>/', views.SingleCompanyApiView.as_view()),
     path('portfolio/', views.GetPortfolioOfUser.as_view()),
     path('stocks/', views.GetStocksByCompany.as_view()),
     path('operations/', views.GetOperations.as_view()),
