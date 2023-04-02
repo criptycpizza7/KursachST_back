@@ -6,6 +6,7 @@ from rest_framework import views, viewsets
 from rest_framework.response import Response
 from datetime import date
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+import jwt
 
 class UserViewSet(viewsets.ModelViewSet):
 
@@ -202,7 +203,9 @@ class GetOperations(views.APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        operations = Operations.objects.filter(user_id = request.data['user'])
+        token = request.META['HTTP_AUTHORIZATION'][6:]
+        user = jwt.decode(token, key='django-insecure-v96(ul6q_=kr!kmcj-rpu5@0n0&pa^0q&r$mtb1t9-4zwrhstn', algorithms='HS256')['user_id']
+        operations = Operations.objects.filter(user_id = user)
         if operations.exists():
             return Response({'response': operations.values()})
         else:
