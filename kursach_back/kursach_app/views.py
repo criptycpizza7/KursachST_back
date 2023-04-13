@@ -8,6 +8,7 @@ from datetime import date
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 import jwt
 
+
 class UserViewSet(viewsets.ModelViewSet):
 
     permission_classes = (IsAuthenticated,)
@@ -90,8 +91,7 @@ class CompanyAPIview(views.APIView):
         return Response({'response': serializer.data})
     
     
-    
-
+# TODO методы доступны только менеджерам
 class SingleCompanyApiView(views.APIView):
     
     def get(self, request, *args, **kwargs):
@@ -133,17 +133,19 @@ class SingleCompanyApiView(views.APIView):
         instance.delete()
         return Response({'response': ['deleted',]})
 
-class GetStocksByCompany(views.APIView):
+
+class GetStocksByCompany(views.APIView): # для построения графиков
     def get(self, request):
-        company = Company.objects.filter(Name=request.data['name'])
+        company = Company.objects.filter(name=request.data['name'])
         if company.exists():
             company_id = company.values()[0]['id']
-            stocks = Stocks.objects.filter(Company_id=company_id)
-            return Response({'response': {'name': company.values()[0]['Name'], 'stocks': stocks.values()}})
+            stocks = Stocks.objects.filter(company_id=company_id)
+            return Response({'response': {'name': company.values()[0]['name'], 'stocks': stocks.values()}})
         else:
             return Response({'error': 'Неверно указано название компании'})
         
 
+# TODO получать user_id из токена
 class GetPortfolioOfUser(views.APIView):
 
     permission_classes = (IsAuthenticated,)
@@ -213,6 +215,7 @@ class GetPortfolioOfUser(views.APIView):
 
         return Response({'response': serializer.data})
     
+
 class GetOperations(views.APIView):
 
     permission_classes = (IsAuthenticated,)

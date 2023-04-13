@@ -19,7 +19,7 @@ class Company(models.Model):
         return f"{self.name} - {self.ticker}"
 
 class Stocks(models.Model):
-    time = models.DateTimeField(primary_key=True, auto_now_add=True)
+    time = models.DateTimeField(auto_now_add=True)
     price = models.FloatField()
     company = models.ForeignKey('Company', on_delete=models.CASCADE)
     change_percent = models.FloatField()
