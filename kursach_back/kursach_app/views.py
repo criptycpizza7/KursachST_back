@@ -1,17 +1,32 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .models import Company, Operations, Portfolio, User, Stocks
-from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, UserSerializer, UserSerializerProd
+from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, UserSerializerProd
 from rest_framework import views, viewsets
 from rest_framework.response import Response
 from datetime import date
-from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission
+from rest_framework.decorators import permission_classes
 import jwt
+
+SECRET_KEY = 'django-insecure-v96(ul6q_=kr!kmcj-rpu5@0n0&pa^0q&r$mtb1t9-4zwrhstn'
+
+
+class ManagerOnly(BasePermission):
+
+    def has_permission(self, request, view):
+        SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+        try:
+            if request.method in SAFE_METHODS or jwt.decode(request.META['HTTP_AUTHORIZATION'][6:], algorithms=['HS256'], key=SECRET_KEY)['is_staff']:
+                return True
+            return False
+        except:
+            return False
 
 
 class UserViewSet(viewsets.ModelViewSet):
 
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (ManagerOnly,)
 
     queryset = User.objects.all()
     serializer_class = UserSerializerProd
@@ -30,47 +45,10 @@ class RegisterView(views.APIView):
         if bool(obj):
             return Response({'error': 'Пользователь с таким логином уже существует'})
         
-        try:
-            obj = User.objects.get(email=request.data['email'])
-        except:
-            pass
-        if bool(obj):
-            return Response({'error': 'Пользователь с такой почтой уже существует'})
-        
-        try:
-            obj = User.objects.get(passport=request.data['passport'])
-        except:
-            pass
-        if bool(obj):
-            return Response({'error': 'Пользователь с таким номером паспорта уже существует'})
-        
-        try:
-            obj = User.objects.get(INN=request.data['INN'])
-        except:
-            pass
-        if bool(obj):
-            return Response({'error': 'Пользователь с таким ИНН уже существует'})
-        
-        try:
-            obj = User.objects.get(phone_number=request.data['phone_number'])
-        except:
-            pass
-        if bool(obj):
-            return Response({'error': 'Пользователь с таким номером телефона уже существует'})
-        
         serializer = UserSerializerProd(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = User.objects.create_user(username=request.data['username'],
-                                        password=request.data['password'],
-
-                                        first_name=request.data['first_name'],
-                                        last_name=request.data['last_name'],
-                                        middle_name=request.data['middle_name'],
-
-                                        email=request.data['email'],
-                                        INN=request.data['INN'],
-                                        passport=request.data['passport'],
-                                        phone_number=request.data['phone_number'])
+                                        password=request.data['password'])
 
         return Response({'response': serializer.data})
 
@@ -91,7 +69,7 @@ class CompanyAPIview(views.APIView):
         return Response({'response': serializer.data})
     
     
-# TODO методы доступны только менеджерам
+@permission_classes([ManagerOnly])
 class SingleCompanyApiView(views.APIView):
     
     def get(self, request, *args, **kwargs):
@@ -106,6 +84,7 @@ class SingleCompanyApiView(views.APIView):
             return Response({'error': 'Неверный объект'})
 
     def put(self, request, *args, **kwargs):
+        permission_classes = (ManagerOnly, )
         pk = kwargs.get('pk', None)
         if not pk:
             return Response({'error': 'Неверный объект'})
@@ -119,7 +98,7 @@ class SingleCompanyApiView(views.APIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response({'response': serializer.data})
-
+    
     def delete(self, request, *args, **kwargs):
         pk = kwargs.get('pk', None)
         if not pk:
@@ -145,17 +124,15 @@ class GetStocksByCompany(views.APIView): # для построения граф�
             return Response({'error': 'Неверно указано название компании'})
         
 
-# TODO получать user_id из токена
 class GetPortfolioOfUser(views.APIView):
 
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        portfolio = Portfolio.objects.filter(user_id=request.data['user_id'])
-        if portfolio.exists():
-            return Response({'response': portfolio.values()})
-        else:
-            return Response({'error': 'Неверно указан id пользователя'})
+        print(request.META)
+        user_id = int(jwt.decode(request.META['HTTP_AUTHORIZATION'][6:], key=SECRET_KEY, algorithms='HS256')['user_id'])
+        portfolio = Portfolio.objects.filter(user_id=user_id)
+        return Response({'response': portfolio.values()})
         
     def post(self, request):
 
