@@ -46,9 +46,9 @@ urlpatterns = [
     path('company/', views.CompanyAPIview.as_view()),
     path('company/<int:pk>/', views.SingleCompanyApiView.as_view()),
     path('portfolio/', views.GetPortfolioOfUser.as_view()),
-    path('stocks/', views.GetStocksByCompany.as_view()),
     path('operations/', views.GetOperations.as_view()),
     path('register/', views.RegisterView.as_view()),
+    path('stocks/<int:company_pk>/', views.StocksView.as_view()),
 
     path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),

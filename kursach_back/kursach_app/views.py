@@ -1,7 +1,7 @@
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .models import Company, Operations, Portfolio, User, Stocks
-from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, UserSerializerProd
+from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, StocksSerializer, UserSerializerProd
 from rest_framework import views, viewsets
 from rest_framework.response import Response
 from datetime import date
@@ -84,7 +84,6 @@ class SingleCompanyApiView(views.APIView):
             return Response({'error': 'Неверный объект'})
 
     def put(self, request, *args, **kwargs):
-        permission_classes = (ManagerOnly, )
         pk = kwargs.get('pk', None)
         if not pk:
             return Response({'error': 'Неверный объект'})
@@ -209,3 +208,20 @@ class GetOperations(views.APIView):
                 return Response({'error': 'У пользователя нет операций'})
             except:
                 return Response({'error': 'Неверный id пользователя'})
+            
+
+class StocksView(views.APIView):
+
+    def get(self, request, *args, **kwargs):
+        company_pk = kwargs.get('company_pk', None)
+        if company_pk:
+
+            company = Company.objects.filter(pk=company_pk)
+            if not company.exists():
+                return Response({'error': "Неверный id компании"})
+
+            stocks = Stocks.objects.filter(company_id = company_pk).values()
+            return Response({'response': list(stocks)})
+        else:
+            return Response({'error': 'Не указан id компании'})
+

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Operations, User, Company, Stocks, Portfolio
+from django_grpc_framework import proto_serializers
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -33,3 +34,12 @@ class OperationsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Operations
         fields = '__all__'
+
+
+class StocksSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Stocks
+        fields = '__all__'
+
+
+# class StocksProtoSerializer()
