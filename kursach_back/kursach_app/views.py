@@ -1,3 +1,4 @@
+import random
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .models import Company, Operations, Portfolio, User, Stocks
@@ -8,6 +9,7 @@ from datetime import date
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly, BasePermission
 from rest_framework.decorators import permission_classes
 import jwt
+from django.db import connection
 
 SECRET_KEY = 'django-insecure-v96(ul6q_=kr!kmcj-rpu5@0n0&pa^0q&r$mtb1t9-4zwrhstn'
 
@@ -65,6 +67,9 @@ class CompanyAPIview(views.APIView):
         serializer = CompanySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        company = Company.objects.get(name=request.data['name'])
+        with connection.cursor() as cursor:
+            cursor.execute(f'insert into kursach_app_stocks ("time", price, change_percent, company_id) values(now(), {random.randint(1, 30)}, 0, {company.id})')
         
         return Response({'response': serializer.data})
     
@@ -128,7 +133,6 @@ class GetPortfolioOfUser(views.APIView):
     permission_classes = (IsAuthenticated,)
 
     def get(self, request):
-        print(request.META)
         user_id = int(jwt.decode(request.META['HTTP_AUTHORIZATION'][6:], key=SECRET_KEY, algorithms='HS256')['user_id'])
         portfolio = Portfolio.objects.filter(user_id=user_id)
         return Response({'response': portfolio.values()})
@@ -136,9 +140,10 @@ class GetPortfolioOfUser(views.APIView):
     def post(self, request):
 
         user_portfolio = 0
+        user_id = jwt.decode(request.META['HTTP_AUTHORIZATION'][6:], key='django-insecure-v96(ul6q_=kr!kmcj-rpu5@0n0&pa^0q&r$mtb1t9-4zwrhstn', algorithms='HS256')['user_id']
 
         try:
-            user_portfolio = Portfolio.objects.get(user_id = request.data['user'], company_id = request.data['company'])
+            user_portfolio = Portfolio.objects.get(user_id = int(user_id), company_id = request.data['company'])
             
             serializer = PortfolioSerializer(data=model_to_dict(user_portfolio))
             serializer.is_valid(raise_exception=True)
@@ -164,7 +169,7 @@ class GetPortfolioOfUser(views.APIView):
             serializer.update(instance=user_portfolio, validated_data=valid_user_portfolio)
 
         except:
-            user = User.objects.filter(pk = request.data['user'])
+            user = User.objects.filter(pk = user_id)
             company = Company.objects.filter(pk = request.data['company'])
 
             if not user.exists():
@@ -174,14 +179,14 @@ class GetPortfolioOfUser(views.APIView):
             
             if request.data['number_of_shares'] < 0:
                 return Response({'error': 'У пользователя нет данных акций'})
-
-            serializer = PortfolioSerializer(data=request.data)
+            data = request.data
+            data['user'] = user_id
+            serializer = PortfolioSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
 
         current_price = Stocks.objects.filter(company = request.data['company']).latest().price
-            
-        operation_obj = {'user': request.data['user'], 'company': request.data['company'],
+        operation_obj = {'user': user_id, 'company': request.data['company'],
                             'number_of_shares': request.data['number_of_shares'], 'price': current_price,
                             'status': request.data['number_of_shares'] > 0}
         
@@ -204,7 +209,7 @@ class GetOperations(views.APIView):
             return Response({'response': operations.values()})
         else:
             try: 
-                user = User.objects.get(pk = request.data['user'])
+                user = User.objects.get(pk = user)
                 return Response({'error': 'У пользователя нет операций'})
             except:
                 return Response({'error': 'Неверный id пользователя'})

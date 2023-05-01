@@ -4,7 +4,7 @@ from .models import Company, Portfolio, User
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    fields = ("first_name", "last_name", "username")
+    fields = ("username", )
 
 
 @admin.register(Company)
