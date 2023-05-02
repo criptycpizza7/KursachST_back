@@ -29,8 +29,6 @@ class User(AbstractUser):
     is_superuser = models.BooleanField(default=False)
     date_joined = models.DateField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
-    money = models.DecimalField(default=0, max_digits=50, decimal_places=2)
-
 
     def __str__(self):
         return f"{self.username}"
