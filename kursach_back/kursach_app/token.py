@@ -39,7 +39,7 @@ class MyTokenVerifyView(TokenViewBase):
             except TokenError as e:
                 raise InvalidToken(e.args[0])
 
-            return Response(model_to_dict(user, fields=['id', 'is_staff', 'username']))
+            return Response({'user': model_to_dict(user, fields=['id', 'is_staff', 'username'])})
         
         except InvalidSignatureError:
             return Response({'error': 'Токен не валиден'})
