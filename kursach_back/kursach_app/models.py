@@ -23,6 +23,10 @@ class Stocks(models.Model):
 
     class Meta:
         get_latest_by = ['time']
+        verbose_name_plural = 'Stocks'
+
+    def __str__(self):
+        return str(self.pk)
 
 
 class User(AbstractUser):

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Company, Portfolio, User
+from .models import Company, Portfolio, User, Stocks
 
 
 @admin.register(User)
@@ -14,3 +14,7 @@ class CompanyAdmin(admin.ModelAdmin):
 @admin.register(Portfolio)
 class PortfolioAdmin(admin.ModelAdmin):
     fields = ('User_id', 'Company_id', 'Number_of_shares')
+
+@admin.register(Stocks)
+class StocksAdmin(admin.ModelAdmin):
+    fields = ('price', 'company', 'change_percent')
