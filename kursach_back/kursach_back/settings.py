@@ -26,8 +26,7 @@ SECRET_KEY = 'django-insecure-v96(ul6q_=kr!kmcj-rpu5@0n0&pa^0q&r$mtb1t9-4zwrhstn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
-
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'http://localhost:5173', 'localhost:5173']
 
 # Application definition
 
@@ -43,7 +42,13 @@ INSTALLED_APPS = [
     'kursach_app.apps.KursachAppConfig',
     'django_filters',
     'drf_yasg',
+    'corsheaders',
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://localhost']
 
 SWAGGER_SETTINGS = {
     'SECURITY_DEFINITIONS' : {

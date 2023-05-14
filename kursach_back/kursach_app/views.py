@@ -26,6 +26,23 @@ class ManagerOnly(BasePermission):
             return False
 
 
+class MyIsAuthenticatedOrReadOnly(BasePermission):
+
+    def has_permission(self, request, view):
+        SAFE_METHODS = ['GET', 'HEAD', 'OPTIONS']
+        try:
+            if request.method in SAFE_METHODS:
+                print('get')
+                return True
+            elif jwt.decode(request.META['HTTP_AUTHORIZATION'][6:], algorithms=['HS256'], key=SECRET_KEY)['is_staff']:
+                print('staff')
+                return True
+            return False
+        except:
+            return False
+
+
+
 class UserViewSet(viewsets.ModelViewSet):
 
     permission_classes = (ManagerOnly,)
@@ -57,7 +74,7 @@ class RegisterView(views.APIView):
 
 class CompanyAPIview(views.APIView):
 
-    permission_classes = (IsAuthenticatedOrReadOnly, )
+    permission_classes = (MyIsAuthenticatedOrReadOnly, )
 
     def get(self, request):
         data = Company.objects.all()

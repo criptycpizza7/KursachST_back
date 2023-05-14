@@ -4,7 +4,7 @@ from rest_framework_simplejwt.views import TokenViewBase
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 from rest_framework.response import Response
 import jwt
-from jwt.exceptions import InvalidSignatureError, ExpiredSignatureError
+from jwt.exceptions import InvalidSignatureError, ExpiredSignatureError, DecodeError
 
 from .models import User
 
@@ -41,7 +41,7 @@ class MyTokenVerifyView(TokenViewBase):
 
             return Response({'user': model_to_dict(user, fields=['id', 'is_staff', 'username'])})
         
-        except InvalidSignatureError:
+        except (InvalidSignatureError, DecodeError) as e:
             return Response({'error': 'Токен не валиден'})
         
         except ExpiredSignatureError:
