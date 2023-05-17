@@ -178,6 +178,15 @@ class GetPortfolioOfUser(views.APIView):
 
             if valid_user_portfolio['number_of_shares'] == 0:
                 user_portfolio.delete()
+                current_price = Stocks.objects.filter(company = request.data['company']).latest().price
+                operation_obj = {'user': user_id, 'company': request.data['company'],
+                            'number_of_shares': request.data['number_of_shares'], 'price': current_price,
+                            'status': request.data['number_of_shares'] > 0}
+                
+                operation_serializer = OperationsSerializer(data=operation_obj)
+                operation_serializer.is_valid(raise_exception=True)
+                operation_serializer.save()
+
                 return Response({'response': 'Запись удалена'})
 
             valid_user_portfolio['user'] = user_portfolio.user
@@ -201,11 +210,14 @@ class GetPortfolioOfUser(views.APIView):
             serializer = PortfolioSerializer(data=data)
             serializer.is_valid(raise_exception=True)
             serializer.save()
+            pass
 
         current_price = Stocks.objects.filter(company = request.data['company']).latest().price
         operation_obj = {'user': user_id, 'company': request.data['company'],
                             'number_of_shares': request.data['number_of_shares'], 'price': current_price,
                             'status': request.data['number_of_shares'] > 0}
+        
+        print(request.data['number_of_shares'])
         
         operation_serializer = OperationsSerializer(data=operation_obj)
         operation_serializer.is_valid(raise_exception=True)
