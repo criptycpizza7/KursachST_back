@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  web:
+  back:
     build: .
-    image: criptycpizza7/kursachst_back-web-lite
+    image: criptycpizza7/kursachst_back-web-psql
     command: python kursach_back/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/usr/src/app/
@@ -11,17 +11,24 @@ services:
       - 8000:8000
     env_file:
       - ./.env.dev
-    # depends_on:
-    #   - db
+    depends_on:
+      - db
 
-#   db:
-#     image: postgres
-#     volumes:
-#       - postgres_data:/var/lib/postgresql/data/
-#     environment:
-#       - POSTGRES_USER=kursach_dbuser
-#       - POSTGRES_PASSWORD=asdf
-#       - POSTGRES_DB=kursach_db
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=kursach_dbuser
+      - POSTGRES_PASSWORD=asdf
+      - POSTGRES_DB=kursach_db
+    
+  front:
+    
+  stock:
 
-# volumes:
-#   postgres_data:
+  socket:
+
+
+volumes:
+  postgres_data:
