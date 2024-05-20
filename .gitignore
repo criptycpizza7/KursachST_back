@@ -1,3 +1,11 @@
 .vscode
 Dockerfile
 Dockerfile.bak
+
+*.pyc
+__pycache__
+
+
+**/__pycache__/
+
+.venv

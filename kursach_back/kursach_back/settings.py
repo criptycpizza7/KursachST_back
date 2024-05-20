@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-v96(ul6q_=kr!kmcj-rpu5@0n0&pa^0q&r$mtb1t9-4zwrhstn
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0', 'http://localhost:5173', 'localhost:5173']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '0.0.0.0']
 
 # Application definition
 
@@ -45,7 +45,6 @@ INSTALLED_APPS = [
     'corsheaders',
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = ['http://localhost:5173', 'http://localhost']
@@ -68,6 +67,16 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+]
+
+CORS_ALLOW_HEADERS = (
+        'Access-Control-Allow-Headers',
+        'Access-Control-Allow-Credentials',
+    )
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",
 ]
 
 ROOT_URLCONF = 'kursach_back.urls'
@@ -94,19 +103,13 @@ WSGI_APPLICATION = 'kursach_back.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': 'db.sqlite3',
-#     }
-# }
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'kursach_db',
-        'USER': 'kursach_dbuser',
-        'PASSWORD': 'asdf',
+        'NAME': 'diplom_db',
+        'USER': 'diplom_dbuser',
+        'PASSWORD': 'diplom_dbuser',
         'HOST': 'localhost',
         'PORT': '5432',
     }

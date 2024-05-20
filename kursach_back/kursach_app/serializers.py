@@ -5,16 +5,22 @@ from .models import Operations, User, Company, Stocks, Portfolio
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = '__all__'
-        read_only_fields = ['last_login', ]
+        fields = ['id', 'username', 'password']
+        read_only_fields = ['id', ]
+
 
 
 class UserSerializerProd(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'password', 'username']
+        fields = ['id', 'username']
         read_only_fields = ['id', ]
-        extra_kwargs = {'password': {'write_only': True}}
+
+    def validate(self, data):
+        if self.context['request'].method == 'POST':
+            if 'password' not in data:
+                raise serializers.ValidationError("password is required for POST")
+        return data
 
 
 class CompanySerializer(serializers.ModelSerializer):

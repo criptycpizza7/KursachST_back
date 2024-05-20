@@ -2,7 +2,7 @@ import random
 from django.forms import model_to_dict
 from django.shortcuts import render
 from .models import Company, Operations, Portfolio, User, Stocks
-from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, StocksSerializer, UserSerializerProd
+from .serializers import CompanySerializer, OperationsSerializer, PortfolioSerializer, StocksSerializer, UserSerializer, UserSerializerProd
 from rest_framework import views, viewsets
 from rest_framework.response import Response
 from datetime import date
@@ -64,7 +64,7 @@ class RegisterView(views.APIView):
         if bool(obj):
             return Response({'error': 'Пользователь с таким логином уже существует'})
         
-        serializer = UserSerializerProd(data=request.data)
+        serializer = UserSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = User.objects.create_user(username=request.data['username'],
                                         password=request.data['password'])
